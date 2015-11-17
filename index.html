@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+
+        <title>Chromecast Video Source Test</title>
+    </head>
+
+    <body ng-app="EXOS.Ocelot.Receiver">
+
+        <main ui-view></main>
+
+        <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
+
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.14.3/ui-bootstrap-tpls.min.js"></script>
+
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0-beta.1/angular-sanitize.js"></script>
+
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.15/angular-ui-router.js"></script>
+
+        <script>
+            'use strict';
+
+            var module = angular.module('EXOS.Ocelot.Receiver', [
+                'ui.bootstrap',
+                'ui.router',
+                'ngSanitize'
+            ]);
+
+
+            module.config([
+                '$stateProvider',
+                '$urlRouterProvider',
+                function ($stateProvider, $urlRouterProvider) {
+                    /**
+                     *  Set up routes for receiver
+                     */
+                    $stateProvider
+
+                    .state('video', {
+                        url: '/',
+                        templateUrl: 'video.html',
+                        controller: 'VideoController',
+                        controllerAs: 'video'
+                    })
+
+                    .state('movement', {
+                        url: '/movement',
+                        templateUrl: 'movement.html',
+                        controller: 'WorkoutMovementController',
+                        controllerAs: 'Movement',
+                        params: { movement: true }
+                    });
+                }
+            ]);
+
+
+            module.run([
+                '$state', '$rootScope',
+                function ($state, $rootScope) {
+
+                    // redirect to idle screens
+                    $state.go('video');
+                }
+            ]);
+
+
+            module.controller('WorkoutMovementController', [
+                '$timeout', '$sceDelegate', 'WorkoutService',
+                function ($timeout, $sceDelegate, WorkoutService) {
+                    var vm    = this,
+                        index = 0;
+
+                    /**
+                     *  getMovementVideo
+                     *
+                     *  @param     {String}    url    Video filename
+                     *  @return    {Object}           Trusted resource
+                     */
+                    vm.getMovementVideo = function (url) {
+                        return $sceDelegate.trustAs('resourceUrl', WorkoutService.cdnMovementUrl + url);
+                    };
+
+                    /**
+                     *  loadNext
+                     *
+                     *  Increments index and assigns vm.data object
+                     *
+                     *  @return    {Object}    Movement to load
+                     */
+                    vm.loadNext = function () {
+                        index++;
+
+                        if (index === WorkoutService.Movements.length) {
+                            index = 0;
+                        }
+
+                        vm.data = WorkoutService.Movements[index];
+
+                        return vm.data;
+                    };
+
+                    vm.data = WorkoutService.Movements[index];
+                }
+            ]);
+
+
+            module.controller('VideoController', [
+                function () {
+                    var vm = this;
+
+                    // initialize video element here
+                }
+            ]);
+
+
+            module.factory('WorkoutService', [
+                '$rootScope', '$state',
+                function ($rootScope, $state) {
+                    var WorkoutService = {};
+
+
+                    WorkoutService.Movements = [
+                        {
+                            coachingKeys: "<li>Keep toes pulled toward your shin</li><li>Push foot through ground and fully extend hips</li><li>Drive elbow back as opposite leg attacks ground</li>",
+                            id: 2058,
+                            image: "dig-dem-0249.jpg",
+                            name: "Pillar March - Linear",
+                            reps: 10,
+                            repsUnits: "seconds",
+                            rest: 0,
+                            restUnits: null,
+                            sets: null,
+                            video: "dig-dem-0249.mp4"
+                        },
+                        {
+                            coachingKeys: "<li>Initiate the movement with your glutes </li><li>Extend your hips as your push through the ground</li><li>Keep your arms bent, torso still, and body in place </li>",
+                            id: 1985,
+                            image: "dig-dem-0101.jpg",
+                            name: "Pillar Skip - In Place",
+                            reps: 10,
+                            repsUnits: "seconds",
+                            rest: 0,
+                            restUnits: null,
+                            sets: null,
+                            video: "dig-dem-0101.mp4"
+                        },
+                        {
+                            coachingKeys: "<li>Move with speed and stick the landing</li><li>Keep your chest up and back flat</li><li>Do not let your knees collapse to the inside</li>",
+                            id: 2148,
+                            image: "dig-dem-0334.jpg",
+                            name: "Drop Squat - 1 leg",
+                            reps: 3,
+                            repsUnits: "reps each",
+                            rest: 0,
+                            restUnits: null,
+                            sets: null,
+                            video: "dig-dem-0334.mp4"
+                        },
+                        {
+                            coachingKeys: "<li>Keep body weight over arch of your front foot</li><li>Maintain tight torso</li><li>Keep your hip, knee and ankle in line</li>",
+                            id: 929,
+                            image: "dig-dem-0220.jpg",
+                            name: "Lunge - with Rotation",
+                            reps: 3,
+                            repsUnits: "reps each",
+                            rest: 0,
+                            restUnits: null,
+                            sets: null,
+                            video: "dig-dem-0220.mp4"
+                        },
+                        {
+                            coachingKeys: "<li>Keep feet apart and toes pulled toward your shin</li><li>Push foot through ground and fully extend hips</li><li>Do not let your feet come together</li>",
+                            id: 2057,
+                            image: "dig-dem-0248.jpg",
+                            name: "Pillar March - Lateral",
+                            reps: 30,
+                            repsUnits: "seconds",
+                            rest: 0,
+                            restUnits: null,
+                            sets: null,
+                            video: "dig-dem-0248.mp4"
+                        },
+                        {
+                            coachingKeys: "<li>Move with speed and stick the landing</li><li>Keep your chest up and back flat</li><li>Do not let your knees collapse to the inside</li>",
+                            id: 1958,
+                            image: "dig-dem-0065.jpg",
+                            name: "Drop Squat",
+                            reps: 5,
+                            repsUnits: "reps",
+                            rest: 0,
+                            restUnits: null,
+                            sets: null,
+                            video: "dig-dem-0065.mp4"
+                        },
+                        {
+                            coachingKeys: "<li>Maintain tight torso</li><li>Keep your hips and shoulders square </li>",
+                            id: 2229,
+                            image: "cpc-dem-0068.jpg",
+                            name: "Plank - with Arm Lift (Feet Wide)",
+                            reps: 30,
+                            repsUnits: "seconds",
+                            rest: 0,
+                            restUnits: null,
+                            sets: null,
+                            video: "cpc-dem-0068.mp4"
+                        },
+                        {
+                            coachingKeys: "<li>Maintain tight torso </li><li>Do not allow any movement in your back</li>",
+                            id: 182,
+                            image: "dig-dem-0190.jpg",
+                            name: "Straight Leg Raises - Supine Alternating",
+                            reps: 30,
+                            repsUnits: "seconds",
+                            rest: 0,
+                            restUnits: null,
+                            sets: null,
+                            video: "dig-dem-0190.mp4"
+                        },
+                        {
+                            coachingKeys: "<li>Generate force with your hips and arms</li><li>Keep your chest up as your lower the ball</li>",
+                            id: 2051,
+                            image: "dig-dem-0242.jpg",
+                            name: "Medicine Ball Granny Toss - Vertical",
+                            reps: 30,
+                            repsUnits: "seconds",
+                            rest: 0,
+                            restUnits: null,
+                            sets: null,
+                            video: "dig-dem-0242.mp4"
+                        },
+                        {
+                            coachingKeys: "<li>Initiate movement with the shoulder blades, not the arms</li><li>At the end of each repetition, your chest should be up with your shoulder blades back.</li>",
+                            id: 763,
+                            image: "dig-dem-0173.jpg",
+                            name: "Ts - Bent Over",
+                            reps: 30,
+                            repsUnits: "seconds",
+                            rest: 0,
+                            restUnits: null,
+                            sets: null,
+                            video: "dig-dem-0173.mp4"
+                        },
+                        {
+                            coachingKeys: "<li>Maintain tight torso</li><li>Keep your hips and shoulders square </li>",
+                            id: 2220,
+                            image: "dig-dem-0216.jpg",
+                            name: "Pillar Bridge - Rolling",
+                            reps: 30,
+                            repsUnits: "seconds",
+                            rest: 0,
+                            restUnits: null,
+                            sets: null,
+                            video: "dig-dem-0216.mp4"
+                        },
+                        {
+                            coachingKeys: "<li>Keep body weight over arches of feet</li><li>Keep your elbows inside your knees as you descend</li><li>Keep your back flat and chest up</li>",
+                            id: 2007,
+                            image: "dig-dem-0128.jpg",
+                            name: "Deep Squat to Stand",
+                            reps: 45,
+                            repsUnits: "seconds",
+                            rest: 0,
+                            restUnits: null,
+                            sets: null,
+                            video: "dig-dem-0128.mp4"
+                        },
+                        {
+                            coachingKeys: "<li>Contract back glute during stretch</li><li>Do not let your front knee slide past your foot</li><li>Do not let your back knee touch the ground</li>",
+                            id: 1945,
+                            image: "dig-dem-0050.jpg",
+                            name: "Reverse Lunge - Moving",
+                            reps: 60,
+                            repsUnits: "seconds",
+                            rest: 0,
+                            restUnits: null,
+                            sets: null,
+                            video: "dig-dem-0050.mp4"
+                        },
+                        {
+                            coachingKeys: "<li>Keep your chest up and shoulders forward </li><li>Maintain a good cutting position during hold</li>",
+                            id: 2047,
+                            image: "dig-dem-0238.jpg",
+                            name: "Crossover Drill - Stabilize",
+                            reps: 30,
+                            repsUnits: "seconds",
+                            rest: 0,
+                            restUnits: null,
+                            sets: null,
+                            video: "dig-dem-0238.mp4"
+                        },
+                        {
+                            coachingKeys: "<li>Maintain stability throughout the movement</li><li>Move your body through the full range of motion</li><li>P,erform each part of the movement explosively</li>",
+                            id: 2198,
+                            image: "dig-dem-0020.jpg",
+                            name: "Burpee",
+                            reps: 30,
+                            repsUnits: "secs each",
+                            rest: 0,
+                            restUnits: null,
+                            sets: null,
+                            video: "dig-dem-0020.mp4"
+                        },
+                        {
+                            coachingKeys: "<li>Keep your chest up</li><li>Fully extend your hips during jump</li><li>Land softly with your hips back and down</li>",
+                            id: 2003,
+                            image: "dig-dem-0124.jpg",
+                            name: "Squat Jump - Continuous",
+                            reps: 20,
+                            repsUnits: "seconds",
+                            rest: 0,
+                            restUnits: null,
+                            sets: null,
+                            video: "dig-dem-0124.mp4"
+                        }
+                    ];
+
+                    WorkoutService.cdnMovementUrl = 'https://a248.e.akamai.net/=/1693/51200/7d/athperf.download.akamai.com/51199/movements/dem-640x360-h264-main/';
+
+                    return WorkoutService;
+                }
+            ]);
+
+
+        </script>
+    </body>
+</html>

@@ -1,0 +1,42 @@
+<div class="container-fluid workouts movement">
+    <div class="row movement-name">
+        <div class="col-lg-8 col-lg-offset-2">
+            <h2>{{ Movement.data.name }}</h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 col-lg-offset-2">
+
+            <div
+                ng-if="Movement.data.image && (!Movement.data.video || Movement.data.video.indexOf('.flv') != -1)"
+                class="col col-center image"
+                style="background: rgb(209, 212, 211) url(http://videos.athletesperformance.com/assets/IMG/{{ Movement.data.image }}) no-repeat center center; background-size: contain;">
+            </div>
+
+            <video
+                ng-if="Movement.data.video && Movement.data.video.indexOf('.flv') == -1"
+                ng-src="{{ Movement.getMovementVideo(Movement.data.video) }}"
+                id="movement-video"
+                ng-poster="http://videos.athletesperformance.com/assets/IMG/{{ Movement.data.image }}"
+                width="640"
+                height="360"
+                controls="controls" autoplay loop>
+            </video>
+        </div>
+    </div>
+
+    <div class="row coaching-tips">
+        <div class="col-lg-8 col-lg-offset-2">
+            <h3>Coaching Tips</h3>
+            <ul ng-bind-html="Movement.data.coachingKeys"></ul>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 col-lg-offset-2">
+            <button ng-click="Movement.loadNext()">Load Next Video</button>
+            <button ui-sref="video">Back to Instructor Videos</button>
+        </div>
+    </div>
+</div>
